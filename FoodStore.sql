@@ -146,7 +146,7 @@ INSERT INTO `user` (`user_id`, `fullname`, `email`, `password`) VALUES
 INSERT INTO `user` (`user_id`, `fullname`, `email`, `password`) VALUES
 (3, 'Le Van C', 'levanc@example.com', 'password789');
 
-
+------------------------------------------------------------------
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
@@ -154,3 +154,37 @@ INSERT INTO `user` (`user_id`, `fullname`, `email`, `password`) VALUES
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+------------------------------------------------------------------
+
+// tìm 2 người like nhiều nhất 
+ SELECT l.user_id, u.fullname, COUNT(l.user_id) AS total_likes
+FROM like_res l
+JOIN user u ON l.user_id = u.user_id
+GROUP BY l.user_id
+ORDER BY total_likes DESC
+LIMIT 2;
+   
+// Tìm 2 nhà hàng có lượt like nhiều nhất.
+SELECT r.res_id, r.res_name, COUNT(l.res_id) AS total_likes
+FROM like_res l
+JOIN restaurant r ON l.res_id = r.res_id
+GROUP BY r.res_id, r.res_name
+ORDER BY total_likes DESC
+LIMIT 2;
+
+// Tìm người đã đặt hàng nhiều nhất
+SELECT o.user_id, u.fullname, COUNT(o.user_id) AS total_orders
+FROM orders o
+JOIN user u ON o.user_id = u.user_id
+GROUP BY o.user_id
+ORDER BY total_orders DESC
+LIMIT 1;
+
+//Tìm người dùng không hoạt động trong hệ thống (không đặt hàng, không like, không đánh giá nhà hàng).
+SELECT u.user_id, u.fullname
+FROM user u
+LEFT JOIN orders o ON u.user_id = o.user_id
+LEFT JOIN like_res l ON u.user_id = l.user_id
+LEFT JOIN rate_res r ON u.user_id = r.user_id
+WHERE o.user_id IS NULL AND l.user_id IS NULL AND r.user_id IS NULL;
